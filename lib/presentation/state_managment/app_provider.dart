@@ -12,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AppProvider extends ChangeNotifier {
   final DataService _dataService = DataService();
   static const String _urlPattern =
-      r"^(https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,}(\/.*)?$";
+      r"^(https?:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)+$";
 
   List<DataModel?> _tasks = [];
   late PathCalculation _grid;
@@ -33,7 +33,6 @@ class AppProvider extends ChangeNotifier {
   String get errorMessage => _errorMessage;
   set errorMessage(String value) {
     _errorMessage = value;
-    notifyListeners();
   }
 
   String? get savedUrl => _savedUrl;
@@ -95,8 +94,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<bool> submitUrl() async {
-    _errorMessage = '';
-    notifyListeners();
+    reset();
     if (_formKey.currentState!.validate()) {
       try {
         String url = _controller.text;
@@ -112,7 +110,6 @@ class AppProvider extends ChangeNotifier {
         return false;
       }
     }
-
     _errorMessage = "Invalid URL";
     notifyListeners();
     return false;
@@ -176,7 +173,7 @@ class AppProvider extends ChangeNotifier {
 
   void reset() {
     _errorMessage = '';
-    _controller.clear();
+    _completionPercentage = 0.0;
     notifyListeners();
   }
 
